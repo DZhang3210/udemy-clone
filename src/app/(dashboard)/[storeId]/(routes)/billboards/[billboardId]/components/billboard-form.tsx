@@ -25,6 +25,7 @@ import { useParams, useRouter } from "next/navigation";
 import AlertModal from "@/components/modals/alert.modal";
 import { ApiAlert } from "@/components/ui/api-alert";
 import { useOrigin } from "hooks/use-origin";
+import { ImageUpload } from "@/components/image-upload";
 
 const formSchema = z.object({
   label: z.string().min(1),
@@ -39,7 +40,6 @@ type BillboardFormValue = z.infer<typeof formSchema>;
 
 const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
   const router = useRouter();
-  const origin = useOrigin();
   const params = useParams();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -66,7 +66,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
         data,
       );
       router.refresh();
-      toast.success("Update succeeded");
+      toast.success(`${toastMessage}`);
     } catch {
       toast.error("Something went wrong");
     } finally {
@@ -117,6 +117,24 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ initialData }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-8"
         >
+          <FormField
+            control={form.control}
+            name="imageUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Background Image</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    value={field.value ? [field.value] : []}
+                    disabled={loading}
+                    onChange={(url) => field.onChange(url)}
+                    onRemove={() => field.onChange("")}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="grid grid-cols-3 gap-8">
             <FormField
               control={form.control}
