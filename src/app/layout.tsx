@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 import ModalProvider from "providers/modal-provider";
+import ToastProvider from "providers/toast-provider";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard",
@@ -18,6 +19,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className={`${GeistSans.variable}`}>
         <body>
+          <ToastProvider />
           <ModalProvider />
           {children}
         </body>
