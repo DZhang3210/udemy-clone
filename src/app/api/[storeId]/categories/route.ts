@@ -66,7 +66,7 @@ export async function GET(
 
     const categories = await db.category.findMany({
       where: {
-        id: params.storeId,
+        storeId: params.storeId,
       },
     });
 

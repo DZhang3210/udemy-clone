@@ -66,7 +66,7 @@ export async function GET(
 
     const color = await db.color.findMany({
       where: {
-        id: params.storeId,
+        storeId: params.storeId,
       },
     });
 

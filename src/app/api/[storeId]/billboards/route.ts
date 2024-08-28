@@ -64,9 +64,9 @@ export async function GET(
       return new NextResponse("Store id is required", { status: 400 });
     }
 
-    const billboards = await db.store.findMany({
+    const billboards = await db.billboard.findMany({
       where: {
-        id: params.storeId,
+        storeId: params.storeId,
       },
     });
 

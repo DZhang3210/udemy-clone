@@ -66,7 +66,7 @@ export async function GET(
 
     const sizes = await db.size.findMany({
       where: {
-        id: params.storeId,
+        storeId: params.storeId,
       },
     });
 
