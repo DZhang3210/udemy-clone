@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/Heading";
 import { Separator } from "@/components/ui/separator";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Category } from "@prisma/client";
+import { Billboard, Category } from "@prisma/client";
 import { Trash } from "lucide-react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -23,6 +23,13 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import AlertModal from "@/components/modals/alert.modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -31,11 +38,15 @@ const formSchema = z.object({
 
 type CategoryFormProps = {
   initialData: Category | null;
+  billboards: Billboard[];
 };
 
 type CategoryFormValue = z.infer<typeof formSchema>;
 
-const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
+const CategoryForm: React.FC<CategoryFormProps> = ({
+  initialData,
+  billboards,
+}) => {
   const router = useRouter();
   const params = useParams();
   const [open, setOpen] = useState(false);
@@ -58,15 +69,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
       setLoading(true);
       if (initialData) {
         await axios.patch(
-          `/api/${params.storeId}/category/${params.billboardId}`,
+          `/api/${params.storeId}/categories/${params.categoryId}`,
           data,
         );
       } else {
-        await axios.post(`/api/${params.storeId}/category`, data);
+        console.log("POST");
+        await axios.post(`/api/${params.storeId}/categories`, data);
       }
 
       router.refresh();
-      router.push(`/${params.storeId}/category`);
+      router.push(`/${params.storeId}/categories`);
       toast.success(`${toastMessage}`);
     } catch {
       toast.error("Something went wrong");
@@ -79,14 +91,14 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
     try {
       setLoading(true);
       await axios.delete(
-        `/api/${params.storeId}/category/${params.billboardId}`,
+        `/api/${params.storeId}/categories/${params.categoryId}`,
       );
       router.refresh();
-      router.push(`/${params.storeId}/category`);
+      router.push(`/${params.storeId}/categories`);
       toast.success("Category Deleted");
     } catch (error) {
       toast.error(
-        "Make sure you remove all categories using this billboard first",
+        "Make sure you remove all products using this category first",
       );
     } finally {
       setLoading(false);
@@ -102,9 +114,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
         onConfirm={onDelete}
         loading={loading}
       />
-      {initialData && (
-        <div className="flex items-center justify-between">
-          <Heading title={title} description={description} />
+
+      <div className="flex items-center justify-between">
+        <Heading title={title} description={description} />
+        {initialData && (
           <Button
             disabled={loading}
             variant={"destructive"}
@@ -113,8 +126,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
           >
             <Trash className="h-4 w-4" />
           </Button>
-        </div>
-      )}
+        )}
+      </div>
       <Separator />
 
       <Form {...form}>
@@ -137,6 +150,39 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initialData }) => {
                     />
                   </FormControl>
                   <FormDescription>This is your Category name</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="billboardId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Billboard</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select a billboard"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {billboards.map((billboard) => (
+                        <SelectItem key={billboard.id} value={billboard.id}>
+                          {billboard.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>This is your Billboard name</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
