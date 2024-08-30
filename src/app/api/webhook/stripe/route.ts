@@ -35,12 +35,12 @@ export async function POST(req: Request) {
   const addressString = addressComponents.filter((c) => c !== null).join(", ");
 
   if (event.type === "checkout.session.completed") {
-    if (!session?.metadata?.userId) {
-      return new NextResponse("User id is required", { status: 400 });
+    if (!session?.metadata?.orderId) {
+      return new NextResponse("Order id is required", { status: 400 });
     }
     const order = await db.order.update({
       where: {
-        id: session?.metadata.userId,
+        id: session?.metadata.orderId,
       },
       data: {
         isPaid: true,
