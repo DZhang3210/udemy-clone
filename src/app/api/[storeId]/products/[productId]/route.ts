@@ -139,10 +139,10 @@ export async function GET(
   { params }: { params: { productId: string } },
 ) {
   try {
-    const { userId } = auth();
-    if (!userId) {
-      return new NextResponse("Unauthenticated", { status: 401 });
-    }
+    // const { userId } = auth();
+    // if (!userId) {
+    //   return new NextResponse("Unauthenticated", { status: 401 });
+    // }
     if (!params.productId) {
       return new NextResponse("Product id is required", { status: 400 });
     }
